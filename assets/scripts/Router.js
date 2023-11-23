@@ -1,25 +1,47 @@
-import { ajouteTache, afficheTache, afficheDetailParTache, supprimeTache, trieTaches } from "./TacheService.js";
+import {  ajouteTache, afficheDetailParTache, supprimeTache, trieTaches } from "./TacheService.js";
 
 export default class Router 
 {
     constructor(el)
     {
         this._el = el;
+        this._elWrapperTaches = document.querySelector('[data-js-taches]');
+        this._elsBtnAfficher = document.querySelectorAll('[data-js-action="afficher"]');
         this._routes = [
             ['/tache/:id', afficheDetailParTache]
         ];
 
-        this._init();
+        this.init();
     }
 
     init()
     {
         this.gereHashbang();
-        afficheTache;
-        ajouteTache;
+        trieTaches('importance');
+
+        this._elWrapperTaches.addEventListener('click', function(e) 
+        {
+            let elBtn = e.target.dataset.jsAction;
+
+            if(elBtn == 'afficher')
+            {
+                let elTache = e.target.closest('[data-js-tache]'),
+                    idTache = elTache.dataset.jsTache;
+
+                window.location = `#!/tache/${idTache}`;
+            } 
+        }.bind(this));
+    
+        /**
+         * Gestion suite à l'événement hashchange
+         */
+        window.addEventListener('hashchange', function()
+        {
+            this.gereHashbang();
+        }.bind(this));
     }
 
-        /**
+    /**
     * Gestion du fragent d'URL suite au #!
     */
     gereHashbang() 
@@ -75,7 +97,6 @@ export default class Router
         // si il n'y a pas de route dans le hash
         if (!isRoute) 
         {
-
         }
     }    
 }

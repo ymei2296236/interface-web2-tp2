@@ -21,7 +21,7 @@
 	<script type="module" src="./assets/scripts/main.js" defer></script>
 </head>
 
-<body>
+<body data-js-component="Router">
 	<header>
 		<h1>TP2</h1>
         <p>Un gestionnaire de tâches (to-do-list) en POO.</p>
@@ -64,30 +64,6 @@
             <h3>Liste des tâches</h3>
 
             <div data-js-taches>
-            <?php
-			require_once('./requetes/fonctionsDB.php');
-			$taches = getTaches();
-
-			while ($tache = mysqli_fetch_assoc($taches)) {
-            ?>
-				<div data-js-tache="<?= $tache['id']?>">
-                        <p>
-                            <span>
-                                <small>Tâche : <?= $tache['tache']?></small>
-                            </span>
-                            -
-                            <span>
-                                <small>Importance : <?= $tache['importance']?></small>
-                            </span>
-                            <span data-js-actions>
-                                <button data-js-action="afficher">Afficher le détail</button>
-                                <button data-js-action="supprimer">Supprimer</button>
-                            </span>
-                        </p>
-                    </div>
-            <?php        
-			}
-		    ?>
             </div>
 
             <div class="to-do-list__actions" data-js-trier-taches>

@@ -2,7 +2,7 @@ import { classMapping } from "./classMapping.js";
 import Formulaire from "./Formulaire.js";
 import TrierTaches from "./TrierTaches.js";
 import Detail from "./Detail.js";
-
+import Router from "./Router.js";
 (function() {
 
     let elsFormulaire = document.querySelectorAll('[data-js-formulaire]'),
@@ -20,4 +20,16 @@ import Detail from "./Detail.js";
     for (let i = 0, l = elsDetail.length; i < l; i++) {
         new Detail(elsDetail[i]);
     }
+
+    let elComponents = document.querySelectorAll('[data-js-component]');
+
+	for (let i = 0, l = elComponents.length; i < l; i++) {
+
+		let datasetComponent = elComponents[i].dataset.jsComponent, 			// => string
+			elComponent = elComponents[i];
+
+		for (let key in classMapping) {
+			if (datasetComponent == key) new classMapping[datasetComponent](elComponent);
+		}
+	}
 })(); 

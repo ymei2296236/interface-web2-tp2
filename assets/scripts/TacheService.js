@@ -1,37 +1,175 @@
+import Tache from "./Tache.js";
+
 class TacheService {
 
-    constructor() 
+    constructor(el) 
     {
-        // this._elTache = 
-        // this._elTemplateTache = 
-        this.init();
+        this._el = el;
+        this.trieTaches = this.trieTaches.bind(this);
+        this.ajouteTache = this.ajouteTache.bind(this);
+        this.injecteTache = this.injecteTache.bind(this);
+        this.afficheDetailParTache = this.afficheDetailParTache.bind(this);
+        this.supprimeTache = this.supprimeTache.bind(this);
+
     }
 
-    init()
-    {
+    trieTaches(ordre) {
+
+        let data = {
+            action: 'getTaches',
+            ordre: ordre
+        },
+            oOptions = {
+            method: 'POST',
+            headers: {
+                 'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        },
+            requete = new Request('requetes/requetesAsync.php', oOptions);
+
+        fetch(requete)
+            .then(function(reponse)
+            {
+                if (reponse.ok) return reponse.json();
+                else throw new Error('La réponse n\'est pas ok.');
+            })
+            .then(function(data)
+            {
+                if (data) 
+                {
+                    let elTaches = document.querySelector('[data-js-taches]');
+                    let dom = '';
+
+                    elTaches.innerHTML = '';
+                    for (let i = 0, l = data.length; i < l; i++) {
+                        this.injecteTache(data[i].id);
+                    }
+                }
+
+            }.bind(this))
+            .catch(function(err)
+            {
+                console.log(err.message);
+            })
+        
     }
 
-    
-    ajouteTache(tache, description, importance)
+    ajouteTache() 
     {
-        let nouvelTache = 
-        {
-             action: 'ajouteTache',
-             tache: tache,
-             description: description,
-             importance: importance
-        }
+        let elForm = document.querySelector('[data-js-formulaire]');
 
-        let oOptions = 
-        {
+
+        let data = {
+            action: 'ajouteTache',
+            tache: elForm.tache.value,
+            description: elForm.description.value,
+            importance: elForm.querySelector('input[name="importance"]:checked').value
+        },
+            oOptions = {
              method: 'POST',
              headers: {
                  'Content-type': 'application/json'
              },
-             body: JSON.stringify(nouvelTache)
-        }
+             body: JSON.stringify(data)
+        },
+            requete = new Request('requetes/requetesAsync.php', oOptions);
 
-        fetch('requetes/requeteAsync.php', oOptions)
+        fetch(requete)
+        .then(function(reponse)
+        {
+            if (reponse.ok) return reponse.text();
+            else throw new Error('La réponse n\'est pas ok.');
+        })
+        .then(function(data)
+        {
+           if (data != 0)
+           {
+            console.log(data);
+
+            this.injecteTache(data);
+
+           }
+
+        }.bind(this))
+        .catch(function(err)
+        {
+            console.log(err.message);
+        })
+
+    }
+
+    injecteTache(idTache) 
+    {
+        let data = {
+            action: 'afficheDetailsParTache',
+            id: idTache
+        },
+            oOptions = {
+             method: 'POST',
+             headers: {
+                 'Content-type': 'application/json'
+             },
+             body: JSON.stringify(data)
+        },
+            requete = new Request('requetes/requetesAsync.php', oOptions);
+
+        fetch(requete)
+        .then(function(reponse)
+        {
+            if (reponse.ok) return reponse.json();
+            else throw new Error('La réponse n\'est pas ok.');
+        }.bind(this))
+        .then(function(data)
+        {
+           if (data != 0)
+           {
+                let elTaches = document.querySelector('[data-js-taches]');
+                let dom =  `<div data-js-tache=${data[0]['id']}>
+                            <p>
+                                <span>
+                                    <small>Tâche : ${data[0]['tache']}</small>
+                                </span>
+                                -
+                                <span>
+                                    <small>Importance : ${data[0]['importance']}</small>
+                                </span>
+                                <span data-js-actions>
+                                    <button data-js-action="afficher">Afficher le détail</button>
+                                    <button data-js-action="supprimer">Supprimer</button>
+                                </span>
+                            </p>
+                        </div>`;
+
+                elTaches.insertAdjacentHTML('beforeend', dom);
+
+                new Tache(elTaches.lastElementChild);
+            }
+
+        }.bind(this))
+        .catch(function(err)
+        {
+            console.log(err.message);
+        }.bind(this))
+    }
+
+
+    afficheDetailParTache(id) {
+
+        let data = {
+            action: 'afficheDetailsParTache',
+            id: id 
+        },
+            oOptions = {
+            method: 'POST',
+            headers: {
+                 'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        },
+            requete = new Request('requetes/requetesAsync.php', oOptions);
+
+        fetch(requete)
         .then(function(reponse)
         {
             if (reponse.ok) return reponse.json();
@@ -39,68 +177,64 @@ class TacheService {
         })
         .then(function(data)
         {
-           console.log(data);
+           if (data != 0)
+           {
+            let description = data[0].description,
+                elTacheDetail = document.querySelector('[data-js-tache-detail]');
 
-        })
+            let elDetailDom =  `<div class="detail__info">
+                                    <p><small>Tâche : </small>${data[0].tache}</p>
+                                    <p><small>Description : </small>${description ? description : 'Aucune description disponible.'}</p>
+                                    <p><small>Importance : </small>${data[0].importance}</p>
+                                </div>`;
+
+            elTacheDetail.innerHTML = elDetailDom;
+            }
+
+        }.bind(this))
         .catch(function(err)
         {
             console.log(err.message);
         })
     }
 
-    
+    supprimeTache(id) {
 
-    afficheTache()
-    {
-        // fetch('template-parts/tache-template.html')
-        //      .then(function(reponse)
-        //      {
-        //          if (reponse.ok) return reponse.json();
-        //          else throw new Error('La réponse n\'est pas ok.');
-        //      })
-        //      .then(function(data)
-        //      {
-                console.log(data);
-                //  this._elTache.innerHTML = '';
-                //  // console.log(data);
-                //  for (let i = 0, l = data.length; i < l; i++) {
-                //      // console.log(data[i]);
-                //      let elCloneTemplate = this._elTemplateTache.cloneNode(true);
-                     
-                //      for (const cle in data[i])
-                //      {
-                //          let regex = new RegExp('{{' + cle + '}}', 'g');
-                //          elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, data[i][cle]);
-                //      }
-                     
-                //      let elNouveauJoueur = document.importNode(elCloneTemplate.content, true);
- 
-                //      // container cible
-                //      this._elTache.append(elNouveauJoueur);
-                //  }
- 
-            //  })
-            //  .catch(function(err)
-            //  {
-            //      console.log(err.message);
-            //  })
-    
-    }
-    
-    afficheDetailParTache()
-    {
+        // Réinjecte le tableau de tâches purgé de la tâche supprimée
 
-    }
-    supprimeTache()
-    {
-        
-    }
+        let data = {
+            action: 'supprimeTache',
+            id: id 
+        },
+            oOptions = {
+            method: 'POST',
+            headers: {
+                 'Content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        },
+            requete = new Request('requetes/requetesAsync.php', oOptions);
 
-    trieTaches()
-    {
+        fetch(requete)
+        .then(function(reponse)
+        {
+            if (reponse.ok) return reponse.text();
+            else throw new Error('La réponse n\'est pas ok.');
+        })
+        .then(function(data)
+        {
+            if (data != "Les champs ne sont pas tous saisis." && data != "Erreur query string") 
+            {
+                trieTaches('importance');
 
+            }
+        }.bind(this))
+        .catch(function(err)
+        {
+            console.log(err.message);
+        })
     }
-        
+  
 }
 
-export const { ajouteTache, afficheTache, afficheDetailParTache, supprimeTache, trieTaches } = new TacheService();
+export const { ajouteTache, afficheDetailParTache, supprimeTache, trieTaches, injecteTache } = new TacheService();

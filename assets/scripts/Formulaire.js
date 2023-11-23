@@ -1,4 +1,4 @@
-// import {  ajouteTache, afficheTache, afficheDetailParTache, supprimeTache, trieTaches } from "./TacheService.js";
+import {  ajouteTache, afficheDetailParTache, supprimeTache, trieTaches } from "./TacheService.js";
 import App from "./App.js";
 
 export default class Formulaire extends App {
@@ -26,7 +26,7 @@ export default class Formulaire extends App {
             /* Si valide */
             let estValide = this.valideFormulaire();
             if (estValide) {
-                this.ajouteTache();
+                ajouteTache();
                 this._el.reset();
             }
         }.bind(this));
@@ -66,42 +66,42 @@ export default class Formulaire extends App {
     /**
      * Ajoute la tâche au tableau aTaches et appelle la méthode pour injecter la nouvelle tâche
      */
-    ajouteTache() 
-    {
-        let data = {
-            action: 'ajouteTache',
-            tache: this._elInputTache.value,
-            description: this._elInputDescription.value,
-            importance: this._el.querySelector('input[name="importance"]:checked').value
-        },
-            oOptions = {
-             method: 'POST',
-             headers: {
-                 'Content-type': 'application/json'
-             },
-             body: JSON.stringify(data)
-        },
-            requete = new Request('requetes/requetesAsync.php', oOptions);
+    // ajouteTache() 
+    // {
+    //     let data = {
+    //         action: 'ajouteTache',
+    //         tache: this._elInputTache.value,
+    //         description: this._elInputDescription.value,
+    //         importance: this._el.querySelector('input[name="importance"]:checked').value
+    //     },
+    //         oOptions = {
+    //          method: 'POST',
+    //          headers: {
+    //              'Content-type': 'application/json'
+    //          },
+    //          body: JSON.stringify(data)
+    //     },
+    //         requete = new Request('requetes/requetesAsync.php', oOptions);
 
-        fetch(requete)
-        .then(function(reponse)
-        {
-            if (reponse.ok) return reponse.text();
-            else throw new Error('La réponse n\'est pas ok.');
-        })
-        .then(function(data)
-        {
-           if (data != 0)
-           {
-            // console.log(data);
-            this.injecteTache(data);
-           }
+    //     fetch(requete)
+    //     .then(function(reponse)
+    //     {
+    //         if (reponse.ok) return reponse.text();
+    //         else throw new Error('La réponse n\'est pas ok.');
+    //     })
+    //     .then(function(data)
+    //     {
+    //        if (data != 0)
+    //        {
+    //         // console.log(data);
+    //         this.injecteTache(data);
+    //        }
 
-        }.bind(this))
-        .catch(function(err)
-        {
-            console.log(err.message);
-        })
+    //     }.bind(this))
+    //     .catch(function(err)
+    //     {
+    //         console.log(err.message);
+    //     })
 
-    }
+    // }
 }
