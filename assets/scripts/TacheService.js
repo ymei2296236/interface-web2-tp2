@@ -58,10 +58,8 @@ class TacheService
 
     ajouteTache() 
     {
-        let elForm = document.querySelector('[data-js-formulaire]');
-
-
-        let data = 
+        let elForm = document.querySelector('[data-js-formulaire]'),
+            data = 
             {
                 action: 'ajouteTache',
                 tache: elForm.tache.value,
@@ -98,107 +96,139 @@ class TacheService
         })
     }
 
-    injecteTache(idTache) 
+    /**
+     * Injecte la tache sélectionné
+     * @param {String} id 
+     */
+    injecteTache(id) 
     {
-        let data = 
+        let encodedId = encodeURIComponent(id),
+            aUrls = [`requetes/requetesAsync.php?idTache=${encodedId}`, 'template-parts/tache-template.html'],
+            aPromesses = [];
+
+        aUrls.forEach(function(url) 
+        {
+            const promesse = fetch(url)
+                .then(function(response) 
+                {
+                    if (response.ok)
+                    {
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) return response.json();
+                        else return response.text();
+                    }
+                    else throw new Error('La réponse n\'est pas OK');
+                })
+
+            aPromesses.push(promesse);
+        });
+
+        Promise.all(aPromesses)
+            .then(function(data) 
             {
-                action: 'afficheDetailsParTache',
-                id: idTache
-            },
-            oOptions = 
+                let tache = data[0],
+                    template = data[1];
+
+                if (tache) 
+                {
+                    let dom;
+                    let elTaches = document.querySelector('[data-js-taches]');
+
+                    if (tache == 'Cette tache n\'existe pas.') 
+                    {
+                        dom = document.createElement('p');
+                        dom.append(data);
+                    }  
+                    else 
+                    {
+                        let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
+
+                        let elCloneTemplate = templateDOM.cloneNode(true);
+                        
+                        for (const cle in tache)
+                        {
+                            let regex = new RegExp('{{' + cle + '}}', 'g');
+                            elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, tache[cle]);
+                        }
+                        
+                        let elNouvelTache = document.importNode(elCloneTemplate.content, true);
+
+                        elTaches.append(elNouvelTache);
+
+                        new Tache(elTaches.lastElementChild);
+                    }
+                }
+            })
+            .catch(function(error) 
             {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            },
-            requete = new Request('requetes/requetesAsync.php', oOptions);
-
-        fetch(requete)
-        .then(function(reponse)
-        {
-            if (reponse.ok) return reponse.json();
-            else throw new Error('La réponse n\'est pas ok.');
-        }.bind(this))
-        .then(function(data)
-        {
-           if (data != 0)
-           {
-                let elTaches = document.querySelector('[data-js-taches]');
-                let dom =  `<div data-js-tache=${data[0]['id']}>
-                            <p>
-                                <span>
-                                    <small>Tâche : ${data[0]['tache']}</small>
-                                </span>
-                                -
-                                <span>
-                                    <small>Importance : ${data[0]['importance']}</small>
-                                </span>
-                                <span data-js-actions>
-                                    <button data-js-action="afficher">Afficher le détail</button>
-                                    <button data-js-action="supprimer">Supprimer</button>
-                                </span>
-                            </p>
-                        </div>`;
-
-                elTaches.insertAdjacentHTML('beforeend', dom);
-
-                new Tache(elTaches.lastElementChild);
-            }
-
-        }.bind(this))
-        .catch(function(err)
-        {
-            console.log(err.message);
-        }.bind(this))
+                console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
+            });
     }
-
 
     afficheDetailParTache(id) 
     {
-        let data = 
+        let encodedId = encodeURIComponent(id),
+            aUrls = [`requetes/requetesAsync.php?idTache=${encodedId}`, 'template-parts/tache-detail-template.html'],
+            aPromesses = [];
+
+        aUrls.forEach(function(url) 
+        {
+            const promesse = fetch(url)
+                .then(function(response) 
+                {
+                    if (response.ok) 
+                    {
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) return response.json();
+                        else return response.text();
+                    }
+                    else throw new Error('La réponse n\'est pas OK');
+                })
+
+            aPromesses.push(promesse);
+        });
+
+        Promise.all(aPromesses)
+            .then(function(data) 
             {
-                action: 'afficheDetailsParTache',
-                id: id 
-            },
-            oOptions = 
+                let tache = data[0],
+                    template = data[1];
+
+                    if (data[0].description == '') data[0].description = 'Aucune description disponible.'
+
+                if (tache) 
+                {
+                    let dom;
+                    let elTacheDetail = document.querySelector('[data-js-tache-detail]');
+
+                    if (tache == 'Cette tache n\'existe pas.') 
+                    {
+                        dom = document.createElement('p');
+                        dom.append(data);
+                    }  
+                    else 
+                    {
+                        elTacheDetail.innerHTML = '';
+
+                        let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
+
+                        let elCloneTemplate = templateDOM.cloneNode(true);
+                        for (const cle in tache)
+                        {
+                            let regex = new RegExp('{{' + cle + '}}', 'g');
+                            elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, tache[cle]);
+                        }
+                        
+                        let elNouvelTache = document.importNode(elCloneTemplate.content, true);
+
+                        elTacheDetail.append(elNouvelTache);
+                    }
+                }
+            })
+            .catch(function(error) 
             {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            },
-            requete = new Request('requetes/requetesAsync.php', oOptions);
-
-        fetch(requete)
-        .then(function(reponse)
-        {
-            if (reponse.ok) return reponse.json();
-            else throw new Error('La réponse n\'est pas ok.');
-        })
-        .then(function(data)
-        {
-           if (data != 0)
-           {
-            let description = data[0].description,
-                elTacheDetail = document.querySelector('[data-js-tache-detail]');
-
-            let elDetailDom =  `<div class="detail__info">
-                                    <p><small>Tâche : </small>${data[0].tache}</p>
-                                    <p><small>Description : </small>${description ? description : 'Aucune description disponible.'}</p>
-                                    <p><small>Importance : </small>${data[0].importance}</p>
-                                </div>`;
-
-            elTacheDetail.innerHTML = elDetailDom;
-            }
-
-        }.bind(this))
-        .catch(function(err)
-        {
-            console.log(err.message);
-        })
+                console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
+            });
     }
 
     supprimeTache(id) 

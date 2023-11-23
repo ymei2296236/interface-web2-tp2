@@ -3,7 +3,7 @@
 
     $request_payload = file_get_contents('php://input');
     $data = json_decode($request_payload, true);
-
+    // requêtes asynchrones par fetch POST
     if (isset($data['action'])) 
     {
         // Switch en fonction de l'action envoyée
@@ -32,11 +32,9 @@
                 if (isset($data['ordre']))
                 {
                     $ordre = htmlspecialchars($data['ordre']);
-
                     $data = array();   
                     $taches = afficheTachesParOrdre($ordre);
-    
-    
+
                     while ($tache = mysqli_fetch_assoc($taches)) { 
                         $data[] = $tache;
                     }
@@ -47,7 +45,7 @@
 
                 break;
 
-            case 'afficheDetailsParTache':
+            // case 'afficheDetailsParTache':
                 if (isset($data['id'])) 
                 {
                     $taches = afficheDetailsParTache($data['id']);
@@ -86,7 +84,27 @@
                 break;
 
         }
-    } else {
+    } 
+    // requêtes asynchrones par fetch GET
+    else if (isset($_GET['idTache'])) {
+
+        $id_tache = htmlspecialchars($_GET['idTache']);
+
+        // Si l'id existe
+        if (mysqli_num_rows(afficheDetailsParTache($id_tache)) > 0) {
+
+            // Obtenir l'usager dans la BD
+            $data = mysqli_fetch_assoc(afficheDetailsParTache($id_tache));
+
+        } else {
+            $data = 'Cet usager n\'existe pas.';
+        }
+        header('Content-type: application/json; charset=utf-8');
+        echo json_encode($data);
+    }
+    else {
         echo 'Erreur action';					
     }
+
+
 ?>
