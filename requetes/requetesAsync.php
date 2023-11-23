@@ -28,13 +28,13 @@
                 }
                 break;
              
-            case 'getTaches':
+            case 'afficheTachesParOrdre':
                 if (isset($data['ordre']))
                 {
                     $ordre = htmlspecialchars($data['ordre']);
 
                     $data = array();   
-                    $taches = getTaches($ordre);
+                    $taches = afficheTachesParOrdre($ordre);
     
     
                     while ($tache = mysqli_fetch_assoc($taches)) { 

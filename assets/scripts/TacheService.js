@@ -1,31 +1,32 @@
 import Tache from "./Tache.js";
 
-class TacheService {
-
+class TacheService 
+{
     constructor(el) 
     {
         this._el = el;
-        this.trieTaches = this.trieTaches.bind(this);
+        this.afficheTachesParOrdre = this.afficheTachesParOrdre.bind(this);
         this.ajouteTache = this.ajouteTache.bind(this);
         this.injecteTache = this.injecteTache.bind(this);
         this.afficheDetailParTache = this.afficheDetailParTache.bind(this);
         this.supprimeTache = this.supprimeTache.bind(this);
-
     }
 
-    trieTaches(ordre) {
-
-        let data = {
-            action: 'getTaches',
-            ordre: ordre
-        },
-            oOptions = {
-            method: 'POST',
-            headers: {
-                 'Content-type': 'application/json'
+    afficheTachesParOrdre(ordre) 
+    {
+        let data = 
+            {
+                action: 'afficheTachesParOrdre',
+                ordre: ordre
             },
-            body: JSON.stringify(data)
-        },
+            oOptions = 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            },
             requete = new Request('requetes/requetesAsync.php', oOptions);
 
         fetch(requete)
@@ -60,19 +61,21 @@ class TacheService {
         let elForm = document.querySelector('[data-js-formulaire]');
 
 
-        let data = {
-            action: 'ajouteTache',
-            tache: elForm.tache.value,
-            description: elForm.description.value,
-            importance: elForm.querySelector('input[name="importance"]:checked').value
-        },
-            oOptions = {
-             method: 'POST',
-             headers: {
-                 'Content-type': 'application/json'
-             },
-             body: JSON.stringify(data)
-        },
+        let data = 
+            {
+                action: 'ajouteTache',
+                tache: elForm.tache.value,
+                description: elForm.description.value,
+                importance: elForm.querySelector('input[name="importance"]:checked').value
+            },
+            oOptions = 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            },
             requete = new Request('requetes/requetesAsync.php', oOptions);
 
         fetch(requete)
@@ -85,10 +88,7 @@ class TacheService {
         {
            if (data != 0)
            {
-            console.log(data);
-
             this.injecteTache(data);
-
            }
 
         }.bind(this))
@@ -96,22 +96,23 @@ class TacheService {
         {
             console.log(err.message);
         })
-
     }
 
     injecteTache(idTache) 
     {
-        let data = {
-            action: 'afficheDetailsParTache',
-            id: idTache
-        },
-            oOptions = {
-             method: 'POST',
-             headers: {
-                 'Content-type': 'application/json'
-             },
-             body: JSON.stringify(data)
-        },
+        let data = 
+            {
+                action: 'afficheDetailsParTache',
+                id: idTache
+            },
+            oOptions = 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            },
             requete = new Request('requetes/requetesAsync.php', oOptions);
 
         fetch(requete)
@@ -154,19 +155,21 @@ class TacheService {
     }
 
 
-    afficheDetailParTache(id) {
-
-        let data = {
-            action: 'afficheDetailsParTache',
-            id: id 
-        },
-            oOptions = {
-            method: 'POST',
-            headers: {
-                 'Content-type': 'application/json'
+    afficheDetailParTache(id) 
+    {
+        let data = 
+            {
+                action: 'afficheDetailsParTache',
+                id: id 
             },
-            body: JSON.stringify(data)
-        },
+            oOptions = 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            },
             requete = new Request('requetes/requetesAsync.php', oOptions);
 
         fetch(requete)
@@ -198,21 +201,22 @@ class TacheService {
         })
     }
 
-    supprimeTache(id) {
-
+    supprimeTache(id) 
+    {
         // Réinjecte le tableau de tâches purgé de la tâche supprimée
-
-        let data = {
-            action: 'supprimeTache',
-            id: id 
-        },
-            oOptions = {
-            method: 'POST',
-            headers: {
-                 'Content-type': 'application/json'
+        let data = 
+            {
+                action: 'supprimeTache',
+                id: id 
             },
-            body: JSON.stringify(data)
-        },
+            oOptions = 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            },
             requete = new Request('requetes/requetesAsync.php', oOptions);
 
         fetch(requete)
@@ -225,8 +229,7 @@ class TacheService {
         {
             if (data != "Les champs ne sont pas tous saisis." && data != "Erreur query string") 
             {
-                trieTaches('importance');
-
+                afficheTachesParOrdre('importance');
             }
         }.bind(this))
         .catch(function(err)
@@ -234,7 +237,6 @@ class TacheService {
             console.log(err.message);
         })
     }
-  
 }
 
-export const { ajouteTache, afficheDetailParTache, supprimeTache, trieTaches, injecteTache } = new TacheService();
+export const { ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre, injecteTache } = new TacheService();

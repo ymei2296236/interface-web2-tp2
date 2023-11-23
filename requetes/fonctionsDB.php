@@ -54,7 +54,7 @@ function ajouteTache($tache, $description, $importance)
     return executeRequete($query, true);
 }
 
-function getTaches($ordre = 'tache')
+function afficheTachesParOrdre($ordre = 'tache')
 {
     return executeRequete("SELECT * FROM taches ORDER BY $ordre");
 

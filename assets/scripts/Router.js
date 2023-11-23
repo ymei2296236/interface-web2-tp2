@@ -1,4 +1,4 @@
-import {  ajouteTache, afficheDetailParTache, supprimeTache, trieTaches } from "./TacheService.js";
+import {  ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre } from "./TacheService.js";
 
 export default class Router 
 {
@@ -17,7 +17,7 @@ export default class Router
     init()
     {
         this.gereHashbang();
-        trieTaches('importance');
+        afficheTachesParOrdre('tache');
 
         this._elWrapperTaches.addEventListener('click', function(e) 
         {
