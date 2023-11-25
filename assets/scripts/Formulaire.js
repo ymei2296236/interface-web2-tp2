@@ -1,4 +1,4 @@
-import {  ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre } from "./TacheService.js";
+import { ajouteTache } from "./TacheService.js";
 import Validation from "./Validation.js";
 
 export default class Formulaire 

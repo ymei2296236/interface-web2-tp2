@@ -27,6 +27,11 @@ import { classMapping } from "./classMapping.js";
         new Detail(elsDetail[i]);
     }
 
+    for (let i = 0, l =elsTache.length; i < l; i++) 
+    {
+        new Tache(elsTache[i]);     
+    }
+    
 	for (let i = 0, l = elComponents.length; i < l; i++) 
     {
 		let datasetComponent = elComponents[i].dataset.jsTaches, 			
@@ -38,8 +43,5 @@ import { classMapping } from "./classMapping.js";
 		}
 	}
 
-    for (let i = 0, l =elsTache.length; i < l; i++) 
-    {
-        new Tache(elsTache[i]);     
-    }
+
 })(); 

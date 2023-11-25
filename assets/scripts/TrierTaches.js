@@ -1,4 +1,4 @@
-import {  ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre } from "./TacheService.js";
+import { afficheTachesParOrdre } from "./TacheService.js";
 
 export default class TrierTaches 
 {

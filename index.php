@@ -60,7 +60,7 @@
                 <?php 
                 require_once("requetes/fonctionsDB.php");
                 $taches = afficheTachesParOrdre();  
-
+                // if ($taches) {}
                 while($rangee = mysqli_fetch_assoc($taches)) 
                 {
                 ?>
@@ -93,11 +93,13 @@
 
         <!-- Section détail d'une tâche -->
         <section class="detail detail--ouvert" data-js-detail>
-            <h3>Détail d'une tâche</h3>
+            <h3 id="cible">Détail d'une tâche</h3>
 
             <div class="chevron chevron--top" data-js-chevron></div>
 
             <div class="detail__tache" data-js-tache-detail></div>
         </section>
+
+        <div class="spacer"></div>
 </body>
 </html>

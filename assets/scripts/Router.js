@@ -1,4 +1,4 @@
-import {  accueil,ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre } from "./TacheService.js";
+import {  accueil, afficheDetailParTache } from "./TacheService.js";
 
 export default class Router 
 {
@@ -10,7 +10,7 @@ export default class Router
         this._routes = [
             ['/tache/:id', afficheDetailParTache]
         ];
-
+        this.gereHashbang = this.gereHashbang.bind(this);
         this.init();
     }
 
@@ -78,6 +78,13 @@ export default class Router
                         let id  = hashInArray[1].slice(1);
                         this._routes[i][1](id);
                         isRoute = true;
+
+                        let cible = document.querySelector('#cible');
+
+                        window.scrollTo({
+                            top:cible.getBoundingClientRect().top - 50,
+                            behavior:'smooth'
+                        });
                     }
                 }
             } 

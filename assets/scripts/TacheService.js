@@ -13,6 +13,10 @@ class TacheService
         this.accueil = this.accueil.bind(this);
         this._path = location.pathname; 
 
+        this._elTaches = document.querySelector('[data-js-taches]');
+        this._elForm = document.querySelector('[data-js-formulaire]')
+        this._elTacheDetail = document.querySelector('[data-js-tache-detail]');
+
     }
 
     afficheTachesParOrdre(ordre) 
@@ -42,11 +46,10 @@ class TacheService
             {
                 if (data) 
                 {
-                    let elTaches = document.querySelector('[data-js-taches]');
-                    let dom = '';
+                    this._elTaches.innerHTML = '';
 
-                    elTaches.innerHTML = '';
-                    for (let i = 0, l = data.length; i < l; i++) {
+                    for (let i = 0, l = data.length; i < l; i++) 
+                    {
                         this.injecteTache(data[i].id);
                     }
                 }
@@ -61,13 +64,12 @@ class TacheService
 
     ajouteTache() 
     {
-        let elForm = document.querySelector('[data-js-formulaire]'),
-            data = 
+        let data = 
             {
                 action: 'ajouteTache',
-                tache: elForm.tache.value,
-                description: elForm.description.value,
-                importance: elForm.querySelector('input[name="importance"]:checked').value
+                tache: this._elForm.tache.value,
+                description: this._elForm.description.value,
+                importance: this._elForm.querySelector('input[name="importance"]:checked').value
             },
             oOptions = 
             {
@@ -134,15 +136,7 @@ class TacheService
 
                 if (tache) 
                 {
-                    let dom;
-                    let elTaches = document.querySelector('[data-js-taches]');
-
-                    if (tache == 'Cette tache n\'existe pas.') 
-                    {
-                        dom = document.createElement('p');
-                        dom.append(data);
-                    }  
-                    else 
+                    if (tache != 'Cette tache n\'existe pas.') 
                     {
                         let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
 
@@ -156,12 +150,12 @@ class TacheService
                         
                         let elNouvelTache = document.importNode(elCloneTemplate.content, true);
 
-                        elTaches.append(elNouvelTache);
+                        this._elTaches.append(elNouvelTache);
 
-                        new Tache(elTaches.lastElementChild);
+                        new Tache(this._elTaches.lastElementChild);
                     }
                 }
-            })
+            }.bind(this))
             .catch(function(error) 
             {
                 console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
@@ -197,49 +191,30 @@ class TacheService
                 let tache = data[0],
                     template = data[1];
 
-                    if (data[0].description == '') data[0].description = 'Aucune description disponible.'
+                if (data[0].description == '') data[0].description = 'Aucune description disponible.'
 
-                    console.log(tache);
                 if (tache) 
                 {
+                    this._elTacheDetail.innerHTML = '';
 
-                    // let dom;
-                    let elTacheDetail = document.querySelector('[data-js-tache-detail]');
-                    elTacheDetail.innerHTML = '';
-                    history.replaceState(null, null, '');
+                    let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
+                    let elCloneTemplate = templateDOM.cloneNode(true);
 
-                    if (tache == 'Cette tâche n\'existe pas.') 
+                    for (const cle in tache)
                     {
-                        // dom = document.createElement('p');
-                        // dom.append(data);
-
-                        return tache;
-                    }  
-                    else 
-                    {
-
-                        let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
-
-                        let elCloneTemplate = templateDOM.cloneNode(true);
-                        for (const cle in tache)
-                        {
-                            let regex = new RegExp('{{' + cle + '}}', 'g');
-                            elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, tache[cle]);
-                        }
-                        
-                        let elNouvelTache = document.importNode(elCloneTemplate.content, true);
-
-                        elTacheDetail.append(elNouvelTache);
+                        let regex = new RegExp('{{' + cle + '}}', 'g');
+                        elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, tache[cle]);
                     }
-                }
-                else
-                {
-                    console.log('tache-non-existe');
-                }
+                    
+                    let elNouvelTache = document.importNode(elCloneTemplate.content, true);
+
+                    this._elTacheDetail.append(elNouvelTache);
+                }     
             }.bind(this))
             .catch(function(error) 
             {
-                // console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
+                console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
+                
                 this.accueil();
 
             }.bind(this));
@@ -285,9 +260,9 @@ class TacheService
     accueil()
     {
         let elTacheDetail = document.querySelector('[data-js-tache-detail]');
+        
         elTacheDetail.innerHTML = '';
         history.replaceState(null, null, this._path);
-        console.log('replaceState');
     }
 }
 

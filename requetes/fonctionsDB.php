@@ -7,9 +7,12 @@ $connexion = connexionDB();
  */
 function connexionDB() {
     define('DB_HOST', 'localhost');
-    define('DB_USER', 'root');
-    define('DB_PASSWORD', 'root');			// MAC
-    // define('DB_PASSWORD', '');			// Windows
+    define('DB_USER', 'root');                  // Localhost
+    define('DB_PASSWORD', 'root');		// Localhost MAC
+    // define('DB_PASSWORD', '');			// Localhost Windows
+
+    // define('DB_USER', 'e2296236');           // Webdev   
+    // define('DB_PASSWORD', 'owioZ7vb1n0D0d4uLPw4');			// Webdev
 
     $laConnexion = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD);
             
@@ -18,7 +21,8 @@ function connexionDB() {
         die('Erreur de connexion à la base de données. ' . mysqli_connect_error());
     }
     
-    $db = mysqli_select_db($laConnexion, 'to-do-list');
+    $db = mysqli_select_db($laConnexion, 'to-do-list'); 	// Localhost
+    // $db = mysqli_select_db($laConnexion, 'e2296236');		// Webdev
 
     if (!$db) {
         die ('La base de données n\'existe pas.');

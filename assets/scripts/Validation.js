@@ -13,6 +13,7 @@ export default class Validation
     {
         this.valideForumlaire();
     }
+
     /**
      * Validation du formulaire
      * @returns
@@ -29,7 +30,8 @@ export default class Validation
         } 
         else 
         {
-            if (this._elInputTache.parentNode.classList.contains('error')) this._elInputTache.parentNode.classList.remove('error');
+            if (this._elInputTache.parentNode.classList.contains('error')) 
+                this._elInputTache.parentNode.classList.remove('error');
         }
 
         /* Inputs Radio 'Importance' */
@@ -37,7 +39,8 @@ export default class Validation
 
         if (elCheckedImportance) 
         {
-            if (this._elsInputImportance[0].parentNode.classList.contains('error')) this._elsInputImportance[0].parentNode.classList.remove('error');
+            if (this._elsInputImportance[0].parentNode.classList.contains('error')) 
+                this._elsInputImportance[0].parentNode.classList.remove('error');
         } 
         else 
         {
