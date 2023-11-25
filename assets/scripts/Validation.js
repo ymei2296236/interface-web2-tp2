@@ -11,13 +11,13 @@ export default class Validation
     
     init()
     {
-        this.estValide();
+        this.valideForumlaire();
     }
     /**
      * Validation du formulaire
      * @returns
      */
-    estValide() 
+    valideForumlaire() 
     {
         let estValide = true;
 
@@ -46,5 +46,14 @@ export default class Validation
         }
 
         return estValide;
+    }
+
+	/**
+	 * GETTER (public)
+	 * Retourne le résultat de la validation
+	 */
+    get estValide()
+    {
+        return this.valideForumlaire();
     }
 }

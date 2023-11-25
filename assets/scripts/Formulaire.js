@@ -25,7 +25,7 @@ export default class Formulaire
             let validation = new Validation(this._el);
             
             /* Si valide */
-            if (validation.estValide()) 
+            if (validation.estValide) 
             {
                 ajouteTache();
                 this._el.reset();

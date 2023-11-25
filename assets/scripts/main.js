@@ -9,8 +9,9 @@ import { classMapping } from "./classMapping.js";
     let elsFormulaire = document.querySelectorAll('[data-js-formulaire]'),
         elsTrierTaches = document.querySelectorAll('[data-js-trier-taches]'),
         elsDetail = document.querySelectorAll('[data-js-detail]'),
-        elComponents = document.querySelectorAll('[data-js-component]'),
+        elComponents = document.querySelectorAll('[data-js-taches]'),
         elsTache = document.querySelectorAll('[data-js-tache]');
+        
     for (let i = 0, l = elsFormulaire.length; i < l; i++) 
     {
         new Formulaire(elsFormulaire[i]);
@@ -28,7 +29,7 @@ import { classMapping } from "./classMapping.js";
 
 	for (let i = 0, l = elComponents.length; i < l; i++) 
     {
-		let datasetComponent = elComponents[i].dataset.jsComponent, 			// => string
+		let datasetComponent = elComponents[i].dataset.jsTaches, 			
 			elComponent = elComponents[i];
 
 		for (let key in classMapping) 

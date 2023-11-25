@@ -1,9 +1,3 @@
-<?php 
-                require_once("requetes/fonctionsDB.php");
-                $taches = afficheTachesParOrdre();  
-                ?>
-
-
 <!DOCTYPE html>
 <html lang="fr_CA">
 <head>
@@ -17,17 +11,10 @@
 	<!-- styles -->
 	<link rel="stylesheet" type="text/css" href="./assets/styles/styles.css">
 
-	<!-- scripts -->
-	<!-- <script src="./assets/scripts/aTaches.js"></script>
-	<script src="./assets/scripts/App.js"></script>
-	<script src="./assets/scripts/Detail.js"></script>
-	<script src="./assets/scripts/Tache.js"></script>
-	<script src="./assets/scripts/Formulaire.js"></script>
-	<script src="./assets/scripts/TrierTaches.js"></script> -->
 	<script type="module" src="./assets/scripts/main.js" defer></script>
 </head>
 
-<body data-js-component="Router">
+<body>
 	<header>
 		<h1>TP2</h1>
         <p>Un gestionnaire de tâches (to-do-list) en POO.</p>
@@ -69,10 +56,10 @@
         <section class="to-do-list">
             <h3>Liste des tâches</h3>
 
-            <div data-js-taches>
+            <div data-js-taches="Router">
                 <?php 
-                // require_once("requetes/fonctionsDB.php");
-                // $taches = afficheTachesParOrdre();  
+                require_once("requetes/fonctionsDB.php");
+                $taches = afficheTachesParOrdre();  
 
                 while($rangee = mysqli_fetch_assoc($taches)) 
                 {

@@ -10,6 +10,7 @@ class TacheService
         this.injecteTache = this.injecteTache.bind(this);
         this.afficheDetailParTache = this.afficheDetailParTache.bind(this);
         this.supprimeTache = this.supprimeTache.bind(this);
+        this.accueil = this.accueil.bind(this);
         this._path = location.pathname; 
 
     }
@@ -198,20 +199,20 @@ class TacheService
 
                     if (data[0].description == '') data[0].description = 'Aucune description disponible.'
 
+                    console.log(tache);
                 if (tache) 
                 {
-                    console.log(tache);
 
-                    let dom;
-                    // this.accueil();
+                    // let dom;
                     let elTacheDetail = document.querySelector('[data-js-tache-detail]');
                     elTacheDetail.innerHTML = '';
                     history.replaceState(null, null, '');
 
                     if (tache == 'Cette tâche n\'existe pas.') 
                     {
-                        dom = document.createElement('p');
-                        dom.append(data);
+                        // dom = document.createElement('p');
+                        // dom.append(data);
+
                         return tache;
                     }  
                     else 
@@ -231,11 +232,17 @@ class TacheService
                         elTacheDetail.append(elNouvelTache);
                     }
                 }
-            })
+                else
+                {
+                    console.log('tache-non-existe');
+                }
+            }.bind(this))
             .catch(function(error) 
             {
-                console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
-            });
+                // console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
+                this.accueil();
+
+            }.bind(this));
     }
 
     supprimeTache(id) 
@@ -280,7 +287,7 @@ class TacheService
         let elTacheDetail = document.querySelector('[data-js-tache-detail]');
         elTacheDetail.innerHTML = '';
         history.replaceState(null, null, this._path);
-        console.log('state');
+        console.log('replaceState');
     }
 }
 

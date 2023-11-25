@@ -18,7 +18,7 @@ export default class Router
     {
         this.gereHashbang();
 
-        this._elWrapperTaches.addEventListener('click', function(e) 
+        this._el.addEventListener('click', function(e) 
         {
             let elBtn = e.target.dataset.jsAction;
 
@@ -57,47 +57,32 @@ export default class Router
                 isId = false;
                 
                 // si la route demande une valeur pour executer la requête
-                if (route.indexOf(':') > -1) 
-                {
-                    route = route.substring(0, route.indexOf('/:'));
-                    isId = true;
-                } 
+            if (route.indexOf(':') > -1) 
+            {
+                route = route.substring(0, route.indexOf('/:'));
+                isId = true;
+            } 
+            
+            // si cette route est trouvée dans le hash
+            if (hash.indexOf(route) > -1) 
+            {
+                // décompose le hash par la route 
+                let hashInArray = hash.split(route);
                 
-                // si cette route est trouvée dans le hash
-                if (hash.indexOf(route) > -1) 
-                {
-                    // décompose le hash par la route 
-                    let hashInArray = hash.split(route);
-                    
-                    // si une valeur/id trouvé dans le hash
+                // si une valeur/id trouvé dans le hash
                 if (hashInArray[1] != '') 
                 {
                     if (isId) 
                     {
                         // traite la valeur et execute la requête
                         let id  = hashInArray[1].slice(1);
-                        let elTache = this._routes[i][1](id);
-                        console.log(elTache);
-                        if (elTache != false)
-                        {
-                            isRoute = true;
-                        }
-                        else accueil();
-                    }
-                    
-                }
-                // pas de valeur/id dans le hash
-                else
-                {
-                    // execute la requête si le hash et la route sont identiques
-                    if (hash === this._routes[i][0]) 
-                    {
-                        this._routes[i][1]();
+                        this._routes[i][1](id);
                         isRoute = true;
                     }
                 }
             } 
         }
+
         // si il n'y a pas de route dans le hash
         if (!isRoute) 
         {
