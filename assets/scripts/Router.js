@@ -1,4 +1,4 @@
-import {  ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre } from "./TacheService.js";
+import {  accueil,ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre } from "./TacheService.js";
 
 export default class Router 
 {
@@ -17,7 +17,6 @@ export default class Router
     init()
     {
         this.gereHashbang();
-        afficheTachesParOrdre('tache');
 
         this._elWrapperTaches.addEventListener('click', function(e) 
         {
@@ -56,31 +55,36 @@ export default class Router
             // parcourt chaque route
             let route = this._routes[i][0],
                 isId = false;
-            
-            // si la route demande une valeur pour executer la requête
-            if (route.indexOf(':') > -1) 
-            {
-                route = route.substring(0, route.indexOf('/:'));
-                isId = true;
-            } 
-            
-            // si cette route est trouvée dans le hash
-            if (hash.indexOf(route) > -1) 
-            {
-                // décompose le hash par la route 
-                let hashInArray = hash.split(route);
-
-                // si une valeur/id trouvé dans le hash
+                
+                // si la route demande une valeur pour executer la requête
+                if (route.indexOf(':') > -1) 
+                {
+                    route = route.substring(0, route.indexOf('/:'));
+                    isId = true;
+                } 
+                
+                // si cette route est trouvée dans le hash
+                if (hash.indexOf(route) > -1) 
+                {
+                    // décompose le hash par la route 
+                    let hashInArray = hash.split(route);
+                    
+                    // si une valeur/id trouvé dans le hash
                 if (hashInArray[1] != '') 
                 {
                     if (isId) 
                     {
                         // traite la valeur et execute la requête
                         let id  = hashInArray[1].slice(1);
-                        this._routes[i][1](id);
-                        isRoute = true;
-                        return id;
+                        let elTache = this._routes[i][1](id);
+                        console.log(elTache);
+                        if (elTache != false)
+                        {
+                            isRoute = true;
+                        }
+                        else accueil();
                     }
+                    
                 }
                 // pas de valeur/id dans le hash
                 else
@@ -97,6 +101,7 @@ export default class Router
         // si il n'y a pas de route dans le hash
         if (!isRoute) 
         {
+            accueil();
         }
     }    
 }

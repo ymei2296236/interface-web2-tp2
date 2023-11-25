@@ -96,9 +96,10 @@
             // Obtenir l'usager dans la BD
             $data = mysqli_fetch_assoc(afficheDetailsParTache($id_tache));
 
-        } else {
-            $data = 'Cet usager n\'existe pas.';
-        }
+        } 
+        // else {
+        //     $data = 'Cette tâche n\'existe pas.';
+        // }
         header('Content-type: application/json; charset=utf-8');
         echo json_encode($data);
     }

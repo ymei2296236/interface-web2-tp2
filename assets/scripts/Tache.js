@@ -25,7 +25,9 @@ export default class Tache
                 afficheDetailParTache(this._index);
                 new Detail(this._elsDetail);
             } 
-            else if (e.target.dataset.jsAction == 'supprimer') supprimeTache(this._index);
+            else if (e.target.dataset.jsAction == 'supprimer') {
+                supprimeTache(this._index);
+            }
         }.bind(this));
     }
 }

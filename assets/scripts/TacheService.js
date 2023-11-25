@@ -10,6 +10,8 @@ class TacheService
         this.injecteTache = this.injecteTache.bind(this);
         this.afficheDetailParTache = this.afficheDetailParTache.bind(this);
         this.supprimeTache = this.supprimeTache.bind(this);
+        this._path = location.pathname; 
+
     }
 
     afficheTachesParOrdre(ordre) 
@@ -198,17 +200,22 @@ class TacheService
 
                 if (tache) 
                 {
-                    let dom;
-                    let elTacheDetail = document.querySelector('[data-js-tache-detail]');
+                    console.log(tache);
 
-                    if (tache == 'Cette tache n\'existe pas.') 
+                    let dom;
+                    // this.accueil();
+                    let elTacheDetail = document.querySelector('[data-js-tache-detail]');
+                    elTacheDetail.innerHTML = '';
+                    history.replaceState(null, null, '');
+
+                    if (tache == 'Cette tâche n\'existe pas.') 
                     {
                         dom = document.createElement('p');
                         dom.append(data);
+                        return tache;
                     }  
                     else 
                     {
-                        elTacheDetail.innerHTML = '';
 
                         let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
 
@@ -267,6 +274,14 @@ class TacheService
             console.log(err.message);
         })
     }
+
+    accueil()
+    {
+        let elTacheDetail = document.querySelector('[data-js-tache-detail]');
+        elTacheDetail.innerHTML = '';
+        history.replaceState(null, null, this._path);
+        console.log('state');
+    }
 }
 
-export const { ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre, injecteTache } = new TacheService();
+export const { accueil, ajouteTache, afficheDetailParTache, supprimeTache, afficheTachesParOrdre, injecteTache } = new TacheService();

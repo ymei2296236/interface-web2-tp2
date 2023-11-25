@@ -1,3 +1,9 @@
+<?php 
+                require_once("requetes/fonctionsDB.php");
+                $taches = afficheTachesParOrdre();  
+                ?>
+
+
 <!DOCTYPE html>
 <html lang="fr_CA">
 <head>
@@ -64,6 +70,31 @@
             <h3>Liste des tâches</h3>
 
             <div data-js-taches>
+                <?php 
+                // require_once("requetes/fonctionsDB.php");
+                // $taches = afficheTachesParOrdre();  
+
+                while($rangee = mysqli_fetch_assoc($taches)) 
+                {
+                ?>
+                    <div data-js-tache="<?=htmlspecialchars($rangee['id'])?>">
+                        <p>
+                            <span>
+                                <small>Tâche : </small><?=htmlspecialchars($rangee['tache'])?>
+                            </span>
+                            -
+                            <span>
+                                <small>Importance : </small><?=htmlspecialchars($rangee['importance'])?>
+                            </span>
+                            <span data-js-actions>
+                                <button data-js-action="afficher">Afficher le détail</button>
+                                <button data-js-action="supprimer">Supprimer</button>
+                            </span>
+                        </p>
+                    </div>
+                <?php
+                }
+                ?>
             </div>
 
             <div class="to-do-list__actions" data-js-trier-taches>
