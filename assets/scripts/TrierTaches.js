@@ -2,20 +2,22 @@ import { afficheTachesParOrdre } from "./TacheService.js";
 
 export default class TrierTaches 
 {
+    #_el;
+
     constructor(el) 
     {
-        this._el = el;
+        this.#_el = el;
 
-        this.init();
+        this.#init();
     }
 
-
+    
     /**
      * Initialise les comportements
      */
-    init() 
+    #init() 
     {
-        this._el.addEventListener('click', function(e) 
+        this.#_el.addEventListener('click', function(e) 
         {
             let ordre = e.target.dataset.jsTrier;
 

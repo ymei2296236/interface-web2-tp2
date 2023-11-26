@@ -68,6 +68,7 @@ if (isset($data['action']))
             }
             break;
     }
+
 } 
 
 // requêtes asynchrones par fetch GET
@@ -78,7 +79,7 @@ else if (isset($_GET['idTache']))
     // Si l'id existe
     if (mysqli_num_rows(afficheDetailsParTache($id_tache)) > 0) 
     {
-        // Obtenir l'usager dans la BD
+        // Obtenir la tâche dans la BD
         $data = mysqli_fetch_assoc(afficheDetailsParTache($id_tache));
     } 
 

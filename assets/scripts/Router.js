@@ -1,24 +1,25 @@
-import {  accueil, afficheDetailParTache } from "./TacheService.js";
+import {  accueil, afficheDetailParTacheId } from "./TacheService.js";
 
 export default class Router 
 {
+    #_el;
+    #_routes;
+
     constructor(el)
     {
-        this._el = el;
-        this._elWrapperTaches = document.querySelector('[data-js-taches]');
-        this._elsBtnAfficher = document.querySelectorAll('[data-js-action="afficher"]');
-        this._routes = [
-            ['/tache/:id', afficheDetailParTache]
+        this.#_el = el;
+        this.#_routes = [
+            ['/tache/:id', afficheDetailParTacheId]
         ];
-        this.gereHashbang = this.gereHashbang.bind(this);
-        this.init();
+        this.gereHashbang = this.#gereHashbang.bind(this);
+        this.#init();
     }
 
-    init()
+    #init()
     {
         this.gereHashbang();
 
-        this._el.addEventListener('click', function(e) 
+        this.#_el.addEventListener('click', function(e) 
         {
             let elBtn = e.target.dataset.jsAction;
 
@@ -43,17 +44,17 @@ export default class Router
     /**
     * Gestion du fragent d'URL suite au #!
     */
-    gereHashbang() 
+    #gereHashbang() 
     {
         let hash = window.location.hash.slice(2),
             isRoute = false;      
             
         if (hash.endsWith('/')) hash = hash.slice(0, -1);
         
-        for (let i = 0, l = this._routes.length; i < l; i++) 
+        for (let i = 0, l = this.#_routes.length; i < l; i++) 
         {
             // parcourt chaque route
-            let route = this._routes[i][0],
+            let route = this.#_routes[i][0],
                 isId = false;
                 
                 // si la route demande une valeur pour executer la requête
@@ -76,15 +77,8 @@ export default class Router
                     {
                         // traite la valeur et execute la requête
                         let id  = hashInArray[1].slice(1);
-                        this._routes[i][1](id);
+                        this.#_routes[i][1](id);
                         isRoute = true;
-
-                        let cible = document.querySelector('#cible');
-
-                        window.scrollTo({
-                            top:cible.getBoundingClientRect().top - 50,
-                            behavior:'smooth'
-                        });
                     }
                 }
             } 
