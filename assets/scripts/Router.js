@@ -2,42 +2,29 @@ import {  accueil, afficheDetailParTacheId } from "./TacheService.js";
 
 export default class Router 
 {
-    #_el;
     #_routes;
 
-    constructor(el)
+    constructor()
     {
-        this.#_el = el;
-        this.#_routes = [
+        this.#_routes = 
+        [
             ['/tache/:id', afficheDetailParTacheId]
         ];
-        this.gereHashbang = this.#gereHashbang.bind(this);
+        
         this.#init();
     }
 
     #init()
     {
-        this.gereHashbang();
-
-        this.#_el.addEventListener('click', function(e) 
-        {
-            let elBtn = e.target.dataset.jsAction;
-
-            if(elBtn == 'afficher')
-            {
-                let elTache = e.target.closest('[data-js-tache]'),
-                    idTache = elTache.dataset.jsTache;
-
-                window.location = `#!/tache/${idTache}`;
-            } 
-        }.bind(this));
+        this.#gereHashbang();
+        
     
         /**
          * Gestion suite à l'événement hashchange
          */
         window.addEventListener('hashchange', function()
         {
-            this.gereHashbang();
+            this.#gereHashbang();
         }.bind(this));
     }
 

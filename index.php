@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>TP2 | Mei Yang</title>
-	<meta name="description" content="TP2 du cours 582-21F-MA Programmation d'interface Web 1">
+	<meta name="description" content="TP2 du cours 582-21F-MA Programmation d'interface Web 2">
 
 	<!-- styles -->
 	<link rel="stylesheet" type="text/css" href="./assets/styles/styles.css">
@@ -14,7 +14,7 @@
 	<script type="module" src="./assets/scripts/main.js" defer></script>
 </head>
 
-<body>
+<body data-js-component="Router">
 	<header>
 		<h1>TP2</h1>
         <p>Un gestionnaire de tâches (to-do-list) en POO.</p>
@@ -25,7 +25,7 @@
         <!-- Section ajout d'une tâche -->
         <section>
             <h3>Ajouter une tâche</h3>
-            <form data-js-formulaire>
+            <form data-js-component="Formulaire">
                 <div>
                     <label for="tache">Nouvelle tâche : </label>
                     <input type="text" id="tache" name="tache">
@@ -56,15 +56,15 @@
         <section class="to-do-list">
             <h3>Liste des tâches</h3>
 
-            <div data-js-taches="Router">
+            <div data-js-taches>
                 <?php 
                 require_once("requetes/fonctionsDB.php");
                 $taches = afficheTachesParOrdre();  
-                // if ($taches) {}
+                
                 while($rangee = mysqli_fetch_assoc($taches)) 
                 {
                 ?>
-                    <div data-js-tache="<?=htmlspecialchars($rangee['id'])?>">
+                    <div data-js-tache="<?=htmlspecialchars($rangee['id'])?>"  data-js-component="Tache">
                         <p>
                             <span>
                                 <small>Tâche : </small><?=htmlspecialchars($rangee['tache'])?>
@@ -84,7 +84,7 @@
                 ?>
             </div>
 
-            <div class="to-do-list__actions" data-js-trier-taches>
+            <div class="to-do-list__actions" data-js-component="TrierTaches">
                 <button data-js-trier="tache">Trier par ordre alphabétique</button>
                 <button data-js-trier="importance">Trier par importance</button>
             </div>
@@ -92,7 +92,7 @@
 
 
         <!-- Section détail d'une tâche -->
-        <section class="detail detail--ouvert" data-js-detail>
+        <section class="detail detail--ouvert" data-js-component="Detail">
             <h3 id="cible">Détail d'une tâche</h3>
 
             <div class="chevron chevron--top" data-js-chevron></div>

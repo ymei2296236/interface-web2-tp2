@@ -38,15 +38,19 @@ if (isset($data['action']))
                 $ordre = htmlspecialchars($data['ordre']);
                 $data = array();   
                 $taches = afficheTachesParOrdre($ordre);
-
-                while ($tache = mysqli_fetch_assoc($taches)) 
-                { 
-                    $data[] = $tache;
-                }
-
-                header('Content-type: application/json; charset=utf-8');
-                echo json_encode($data);
             }
+            else{
+                $data = array();   
+                $taches = afficheTachesParOrdre();
+            }
+
+            while ($tache = mysqli_fetch_assoc($taches)) 
+            { 
+                $data[] = $tache;
+            }
+
+            header('Content-type: application/json; charset=utf-8');
+            echo json_encode($data);
             break;
 
         case 'supprimeTache':
@@ -67,28 +71,37 @@ if (isset($data['action']))
                 echo 'Erreur query string';
             }
             break;
+        
+        case 'afficheDetailsParTache':
+            if (isset($data['id'])) 
+            {
+                if($data['id'] != '')
+                {
+                    $id_tache = htmlspecialchars($data['id']);
+                
+                    // Si l'id existe
+                    if (mysqli_num_rows(afficheDetailsParTache($id_tache)) > 0) 
+                    {
+                        // Obtenir la tâche dans la BD
+                        $data = mysqli_fetch_assoc(afficheDetailsParTache($id_tache));
+                    } 
+                    else 
+                    {
+                        echo 'La tâche n\'existe pas';
+                    }
+                
+                    header('Content-type: application/json; charset=utf-8');
+                    echo json_encode($data);
+                }
+            }
+            else 
+            {
+                echo 'Erreur action';					
+            } 
+            break;
     }
-
 } 
 
-// requêtes asynchrones par fetch GET
-else if (isset($_GET['idTache'])) 
-{
-    $id_tache = htmlspecialchars($_GET['idTache']);
 
-    // Si l'id existe
-    if (mysqli_num_rows(afficheDetailsParTache($id_tache)) > 0) 
-    {
-        // Obtenir la tâche dans la BD
-        $data = mysqli_fetch_assoc(afficheDetailsParTache($id_tache));
-    } 
-
-    header('Content-type: application/json; charset=utf-8');
-    echo json_encode($data);
-}
-else 
-{
-    echo 'Erreur action';					
-}
 
 ?>

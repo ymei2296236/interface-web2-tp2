@@ -1,16 +1,22 @@
 import Tache from "./Tache.js";
+import { appelFetch } from "./App.js";
+
 
 class TacheService 
 {
     #_path;
     #_elTaches;
     #_elForm;
+    #_elDetail;
+    #_elDetailTop;
     #_elTacheDetail;
     
     constructor() 
     {
         this.#_elTaches = document.querySelector('[data-js-taches]');
-        this.#_elForm = document.querySelector('[data-js-formulaire]')
+        this.#_elForm = document.querySelector('[data-js-component="Formulaire"]');
+        this.#_elDetail = document.querySelector('[data-js-component="Detail"]');
+        this.#_elDetailTop = this.#_elDetail.getBoundingClientRect().top;
         this.#_elTacheDetail = document.querySelector('[data-js-tache-detail]');
         this.#_path = location.pathname; 
 
@@ -20,26 +26,35 @@ class TacheService
         this.afficheTacheParId = this.#afficheTacheParId.bind(this);
         this.afficheDetailParTacheId = this.#afficheDetailParTacheId.bind(this);
         this.supprimeTache = this.#supprimeTache.bind(this);
+        this.traitePromesses = this.#traitePromesses.bind(this);
     }
 
 
-    /**
-     * Appels asynchrones Fetch POST, pour les méthodes :  #ajouteTache(), #afficheTachesParOrdre(), #supprimeTache(id)
-     */
 
     /**
      * Ajouter une tâche à la DB
      */
     #ajouteTache()
     {
-        // insèrer la nouvelle tâche à la BD
-        this.#appelFetchPost(
+        let data = 
             {
                 action: 'ajouteTache',
                 tache: this.#_elForm.tache.value,
                 description: this.#_elForm.description.value,
                 importance: this.#_elForm.querySelector('input[name="importance"]:checked').value
-            }, 'text') 
+            },
+            oOptions = 
+            {    
+                method: 'POST',
+                headers: 
+                {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+        // faire un appel async await fetch
+        appelFetch('requetes/requetesAsync.php', oOptions) 
             .then(function(data)
             {
                 // injète la tâche à la liste une fois qu'elle est insérée à la DB
@@ -59,17 +74,84 @@ class TacheService
     }
 
 
+
     /**
-     * Afficher la liste de tâches, ordonnées par 'tache' par défault
-     * @param {string} ordre 
+     * Injecte la tache sélectionnée
+     * @param {String} id 
      */
+    #afficheTacheParId(id)
+    {
+        let template = 'template-parts/tache-template.html',
+            divCible = this.#_elTaches;
+
+        this.#traitePromesses(id, template, divCible);
+    }
+
+
+
+    /**
+    * Supprimer une tâche  
+    * @param {int} id 
+    */
+    #supprimeTache(id) 
+    {
+        let data = 
+            {
+                action: 'supprimeTache',
+                id: id 
+            },
+            oOptions = 
+            {    
+                method: 'POST',
+                headers: 
+                {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+        // faire un appel async await fetch
+        appelFetch('requetes/requetesAsync.php', oOptions) 
+            .then(function(data)
+            {
+                if (data != "Les champs ne sont pas tous saisis." && data != "Erreur query string") 
+                {
+                    this.afficheTachesParOrdre();
+                }
+            }.bind(this))
+            .catch(function(error) 
+            {
+                console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
+            })
+            .finally(function() 
+            {
+                //supprimer loader
+            });
+    }
+    
+    /**
+    * Afficher la liste de tâches, ordonnées par 'tache' par défault
+    * @param {string} ordre 
+    */
     #afficheTachesParOrdre(ordre) 
     {
-        this.#appelFetchPost(
+        let data = 
             {
                 action: 'afficheTachesParOrdre',
                 ordre: ordre
-            }, 'json') 
+            },
+            oOptions = 
+            {    
+                method: 'POST',
+                headers: 
+                {
+                    'Content-type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+        // faire un appel async await fetch
+        appelFetch('requetes/requetesAsync.php', oOptions) 
             .then(function(data)
             {
                 if (data) 
@@ -94,87 +176,6 @@ class TacheService
     }
 
 
-    /**
-     * Supprimer une tâche  
-     * @param {int} id 
-     */
-    #supprimeTache(id) 
-    {
-        this.#appelFetchPost(
-            {
-                action: 'supprimeTache',
-                id: id 
-            }, 'text') 
-        // Réinjecte la liste de tâches purgé de la tâche supprimée
-        .then(function(data)
-        {
-            if (data != "Les champs ne sont pas tous saisis." && data != "Erreur query string") 
-            {
-                afficheTachesParOrdre('importance');
-            }
-        }.bind(this))
-        .catch(function(error) 
-        {
-            console.log(`Il y a eu un problème avec l'opération fetch: ${error.message}`);
-        })
-        .finally(function() 
-        {
-            //supprimer loader
-        });
-    }
-
-    
-    /**
-    * Retourne la promesse de la fonction asynchrone par Fetch Post
-    * @param {Object} data 
-    * @param {String} type 
-    * @returns 
-    */
-    async #appelFetchPost(data, type) 
-    {
-        try 
-        {
-            let response = await fetch('requetes/requetesAsync.php', 
-            {
-                method: 'POST',
-                headers: 
-                {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (response.ok) 
-            {   
-                // spécifier la type de données de retour
-                if (type == 'text') return response.text();
-                else if (type == 'json') return response.json();
-            }
-            else throw new Error('La réponse n\'est pas OK');
-        } 
-        catch (error) 
-        {
-            return error.message;
-        }
-    };
-
-
-    /**
-    * Appels asynchrones Fetch GET avec engin gabarits, pour les méthodes : #afficheTacheParId(id), #afficheDetailParTacheId(id)
-    */
-
-    /**
-     * Injecte la tache sélectionnée
-     * @param {String} id 
-     */
-    #afficheTacheParId(id)
-    {
-        let template = 'template-parts/tache-template.html',
-            divCible = this.#_elTaches,
-            afficheDetailParTacheId = false;
-
-        this.#appelFetchGet(id, template, divCible, afficheDetailParTacheId);
-    }
 
     /**
      * Afficher les détails d'une tâche
@@ -183,22 +184,50 @@ class TacheService
     #afficheDetailParTacheId(id)
     {
         let template = 'template-parts/tache-detail-template.html',
-        divCible = this.#_elTacheDetail,
-        afficheDetailParTacheId = true;
+            divCible = this.#_elTacheDetail;
 
-        this.#appelFetchGet(id, template, divCible, afficheDetailParTacheId);
+        this.#traitePromesses(id, template, divCible, true);
     }
 
     /**
-     * traiter les données retournées par le fetch #promessesFetch(id, template)
+     * traiter les données retournées par l'appel Fetch
      * @param {Int} id 
      * @param {String} template 
      * @param {ElementHTML} divCible 
      * @param {Boolean} afficheDetailParTacheId 
      */
-    #appelFetchGet(id, template, divCible, afficheDetailParTacheId) 
+    #traitePromesses(id, template, divCible, afficheDetailParTacheId = false) 
     {
-        Promise.all(this.#promessesFetch(id, template))
+        let aUrls = 
+            [
+                `requetes/requetesAsync.php`, 
+                template
+            ],
+            aPromesses = [],
+            data = 
+            {
+                action: 'afficheDetailsParTache',
+                id: encodeURIComponent(id),
+            },
+            oOptions = 
+            { 
+                method: 'POST',
+                headers: 
+                {
+                    'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8;'
+                },
+                body: JSON.stringify(data)
+            };
+
+        // faire un appel async await fetch dans un boucle
+        aUrls.forEach(function(url) 
+        {
+            const promesse = appelFetch(url, oOptions);
+            aPromesses.push(promesse);
+
+        }.bind(this));
+
+        Promise.all(aPromesses)
             .then(function(data) 
             {
                 let tache = data[0],
@@ -215,16 +244,31 @@ class TacheService
                         divCible.innerHTML = '';
 
                         // fait descendre la fenêtre du navigateur lorsqu'un clic à une tâche valide pour afficher les détails
-                        let cible = document.querySelector('#cible');
+                        let elDetailTop = this.#_elDetail.getBoundingClientRect().top;
+
+                        if (elDetailTop > this.#_elDetailTop) this.#_elDetailTop = elDetailTop;
 
                         window.scrollTo({
-                            top:cible.getBoundingClientRect().top - 50,
+                            top: this.#_elDetailTop - 200,
                             behavior:'smooth'
                         });
                     }
 
                     // créer le dom à partir du template et des données et l'injecter 
-                    this.#injecteTacheTemplate(divCible, tache, template);
+                    let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild,
+                        elCloneTemplate = templateDOM.cloneNode(true);
+
+                    // remplacer les regex par les vrais valeurs
+                    for (const cle in tache)
+                    {
+                        let regex = new RegExp('{{' + cle + '}}', 'g');
+                        elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, tache[cle]);
+                    }
+            
+                    // créer une copie du Node et l'importer à partir du fichier de template
+                    let elNouvelTache = document.importNode(elCloneTemplate.content, true);
+            
+                    divCible.append(elNouvelTache);
 
                     /*  si pour afficher les détails d'une tâche */
                     if (afficheDetailParTacheId == false)
@@ -241,63 +285,6 @@ class TacheService
 
             }.bind(this));
     }
-
-    /**
-     * spécifier la ressource à charger par l'appel asynchrones Fetch GET et recevoir la réponse
-     * @param {int} id 
-     * @param {*} string 
-     * @returns 
-     */
-    #promessesFetch(id, template)
-    {
-        let encodedId = encodeURIComponent(id),
-            aUrls = [`requetes/requetesAsync.php?idTache=${encodedId}`, template],
-            aPromesses = [];
-
-        aUrls.forEach(function(url) 
-        {
-            const promesse = fetch(url)
-                .then(function(response) 
-                {
-                    if (response.ok) 
-                    {
-                        const contentType = response.headers.get("content-type");
-                        if (contentType && contentType.indexOf("application/json") !== -1) return response.json();
-                        else return response.text();
-                    }
-                    else throw new Error('La réponse n\'est pas OK');
-                })
-            aPromesses.push(promesse);
-        });
-        return aPromesses;
-    }
-
-
-    /**
-     * créer et injecter le dom à partir des données traitées par #appelFetchGet(id, template, divCible, afficheDetailParTacheId) 
-     * @param {ElementHTML} divCible 
-     * @param {Object} tache 
-     * @param {String} template 
-     */
-    #injecteTacheTemplate(divCible, tache, template)
-    {
-        // convertir le template à un élément HTML
-        let templateDOM = new DOMParser().parseFromString(template, 'text/html').head.firstChild;
-        let elCloneTemplate = templateDOM.cloneNode(true);
-
-        // remplacer les regex par les vrais valeurs
-        for (const cle in tache)
-        {
-            let regex = new RegExp('{{' + cle + '}}', 'g');
-            elCloneTemplate.innerHTML = elCloneTemplate.innerHTML.replace(regex, tache[cle]);
-        }
-
-        // créer une copie du Node et l'importer à partir du fichier de template
-        let elNouvelTache = document.importNode(elCloneTemplate.content, true);
-
-        divCible.append(elNouvelTache);
-    }
-
 
 
     /**
